@@ -42,6 +42,12 @@ function Index() {
                 "msg": msg ? msg : ""
             }
         )
+        if (res.data['statusCode'] == 200) {
+            window.alert('validate success')
+        } else {
+            window.alert('error')
+        }
+
     }
 
     const renderModal = (id: string) => {
@@ -65,8 +71,8 @@ function Index() {
                     <Button variant="secondary" onClick={() => { setOpenModal(false) }}>
                         Cancel
                     </Button>
-                    <Button variant="primary" onClick={() => {
-                        validate({ id: id, isValid: false, msg: denyReason })
+                    <Button variant="primary" onClick={async () => {
+                        await validate({ id: id, isValid: false, msg: denyReason })
                         window.alert('validate success')
                         setReload(!reload)
                         setOpenModal(false)
@@ -78,9 +84,9 @@ function Index() {
         )
     }
 
-    const handleApprove = (id: string) => {
-        validate({ id: id, isValid: true })
-        window.alert('validate success')
+    const handleApprove = async (id: string) => {
+        await validate({ id: id, isValid: true })
+
         setReload(!reload)
     }
     const handleReject = () => {
