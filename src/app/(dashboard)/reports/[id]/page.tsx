@@ -1,58 +1,203 @@
-import Image from "next/image";
-import React from "react";
+"use client"
 
-const ReportDetail = async ({ params }: { params: { id: string } }) => {
-  const res = await fetch(
-    `http://localhost:3056/api/v1/report/view?type=User&id=${params.id}`
-  );
-  const { metadata } = await res.json();
+import { returnFormattedDate } from "@/hooks/regex";
+import { Alert, Box, Button, Card, CardContent, Grid, Snackbar, TextField, Typography } from "@mui/material";
+import { GridArrowDownwardIcon } from "@mui/x-data-grid";
+import axios from "axios";
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
+
+const ReportDetail = ({ params }: { params: { id: string } }) => {
+  const [report, setReport] = useState<any>()
+  const [adminComment, setAdminComment] = useState('');
+  const [unblockIn, setUnblockIn] = useState(10);
+  const [open, setOpen] = useState(false);
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  const handleAutoClose = () => {
+    setOpen(false)
+  };
+  const fetchData = async () => {
+    const res = await axios.get(
+      `http://localhost:3056/api/v1/report/view?type=User&id=${params.id}`
+    );
+    setReport(res.data['metadata'])
+  }
+  useEffect(() => {
+
+    fetchData()
+
+  }, [])
+
+  const handleResolveReport = async (id: string, status: string) => {
+    const response = await axios.post(`http://localhost:3056/api/v1/report/response`, {
+      reportId: id,
+      state: status,
+      adminComment: adminComment,
+      unblockIn: unblockIn,
+      reason: report.details
+    })
+    fetchData()
+    if (response.data['statusCode'] == 200) {
+      setOpen(true)
+    }
+  }
   return (
-    <div className="d-flex flex-column gap-3">
-      <div className="d-flex align-items-center justify-content-between gap-2 border px-5">
-        <div className="d-flex align-items-center gap-2">
-          <Image
-            src={metadata.user.avatarUrl}
-            width={100}
-            height={100}
-            alt="aa"
-          />
-          <div> {metadata.user.firstName + metadata.user.lastName}</div>
-        </div>
-        <h5>TO</h5>
-        <div className="d-flex align-items-center gap-2">
-          <Image
-            src={metadata.targetEntityId.avatarUrl}
-            width={100}
-            height={100}
-            alt="aa"
-          />
-          <div>
-            {" "}
-            {metadata.targetEntityId.firstName +
-              metadata.targetEntityId.lastName}
-          </div>
-        </div>
-      </div>
-      <div className="px-5">
-        <pre>{metadata.details}</pre>
-      </div>
-      <div>
-        <div>
-          <p>Evidences: </p>
-          {metadata.images.length > 0 ? (
-            metadata.images.maps((image: string) => (
-              <Image src={image} alt={image} width={300} height={300} />
-            ))
-          ) : (
-            <p>None</p>
-          )}
-        </div>
-      </div>
-      <div className="d-flex gap-3">
-        <button className="btn btn-info">Approve</button>
-        <button className="btn btn-danger">Reject</button>
-      </div>
-    </div>
+    <>
+      <Snackbar open={open} autoHideDuration={6000} onClick={handleClose} onClose={handleAutoClose}>
+        <Alert onClose={handleClose} severity="success">
+          Success!
+        </Alert>
+      </Snackbar>
+      {report &&
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <CardContent>
+                      <Typography style={{ marginBottom: '10px' }} variant="h5" component="div">
+                        {report.user.firstName} {report.user.lastName}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Phone: {report.user.phone}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Role: {report.user.role}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Valid: {report.user.isValid.toString()}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        CitizenId: {report.user.attributes.citizen_id.length > 0 ? report.user.attributes.citizen_id.length : "Empty"}
+                      </Typography>
+                    </CardContent>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <CardContent >
+
+                      <img style={{ height: 150, width: 150 }} src={report.user.avatarUrl} alt="User Avatar" />
+                    </CardContent>
+                  </Grid>
+                </Grid>
+              </Card>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '20px' }}>
+                <GridArrowDownwardIcon />
+              </div>
+              <Card>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <CardContent>
+                      <Typography style={{ marginBottom: '10px' }} variant="h5" component="div">
+                        {report.targetEntityId.firstName} {report.targetEntityId.lastName}
+                        {report.targetEntityId.isBlock && <span>(Blocked)</span>}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Phone: {report.targetEntityId.phone}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Role: {report.targetEntityId.role}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Valid: {report.targetEntityId.isValid.toString()}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        CitizenId: {report.targetEntityId.attributes.citizen_id.length > 0 ? report.targetEntityId.attributes.citizen_id.length : "Empty"}
+                      </Typography>
+                    </CardContent>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <CardContent>
+                      <img style={{ height: 150, width: 150 }} src={report.targetEntityId.avatarUrl} alt="User Avatar" />
+                    </CardContent>
+                  </Grid>
+                </Grid>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h5" component="div">
+                    Report Details
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    State: {report.state}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Created At: {returnFormattedDate(report.created)}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Details: {report.details}
+                  </Typography>
+                  {report.state === 'pending' && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                      <Typography variant="body2" color="text.secondary">
+                        Block days:
+                      </Typography>
+                      <TextField
+                        style={{ width: '70px' }}
+                        inputProps={{ min: 10 }}
+                        size="small"
+                        variant="outlined"
+                        type="number"
+                        defaultValue={0}
+                        value={unblockIn}
+                        onChange={(e) => setUnblockIn(Number(e.target.value))}
+                      />
+                    </div>
+                  )}
+                  {report.state === 'approve' && (
+                    <Typography variant="body2" color="text.secondary">
+                      Block days: {report.block.unblockIn}
+                    </Typography>
+                  )}
+
+                  {report.state === 'pending' && (
+                    <>
+                      <Typography variant="body2" color="text.secondary">
+                        Admin Comment:
+                      </Typography>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        variant="outlined"
+                        defaultValue={report.adminComment}
+                        value={adminComment}
+                        onChange={(e) => setAdminComment(e.target.value)}
+                      />
+                    </>
+                  )}
+                  {report.state === 'approve' && (
+
+                    <Typography variant="body2" color="text.secondary">
+                      Admin Comment:   {report.adminComment}
+                    </Typography>
+                  )}
+                  {report.state === 'pending' && (
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '10px' }}>
+                      <Button onClick={() => { handleResolveReport(report._id, 'approve') }} variant="contained" color="primary">
+                        Approve
+                      </Button>
+                      <Button onClick={() => { handleResolveReport(report._id, 'reject') }} variant="contained" color="error">
+                        Reject
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </Box>
+      }
+
+    </>
   );
 };
 

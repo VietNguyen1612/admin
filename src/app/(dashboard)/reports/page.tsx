@@ -1,25 +1,22 @@
 "use client"
+import { Button, Tooltip } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 
 const ReportPage = () => {
+  const router = useRouter()
   const [reports, setReports] = useState<Array<any>>([])
   useEffect(() => {
     const fetchData = async () => {
 
-      let data = await fetch(`http://localhost:3056/api/v1/report/all?type=User`, {
-        cache: "no-cache",
+      let res = await axios.get(`http://localhost:3056/api/v1/report/all?type=User`, {
       });
-      let res = await data.json();
-
-      let data2 = await fetch(`http://localhost:3056/api/v1/report/all?type=Trip`, {
-        cache: "no-cache",
-      });
-      let res2 = await data2.json();
-      // const users = res.metadata as Array<any>;
-      setReports([...res.metadata, ...res2.metadata])
+      setReports(res.data.metadata)
 
     }
     fetchData()
@@ -27,68 +24,119 @@ const ReportPage = () => {
       setReports([])
     }
   }, [])
-  console.log(reports)
+  const columns = [
+    {
+      field: 'user',
+      headerName: 'Reporter',
+      width: 150,
+      sortable: true,
+      valueGetter: (params: any) => {
+        return params.fullName
+      },
+      renderCell: (params: any) => (
+        <Tooltip title={params.value ? params.value : ''} enterDelay={500} enterNextDelay={500}>
+          <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {params.value}
+          </div>
+        </Tooltip>
+      )
+    },
+    {
+      field: 'targetPhoto',
+      headerName: 'Target Photo',
+      width: 150,
+      sortable: false,
+      disableColumnMenu: true,
+      renderCell: (params: any) => (
+        <img src={params.row.targetEntityId.avatarUrl} alt="Place" style={{ objectFit: 'cover', height: '100px', width: '100px' }} />
+      ),
+    },
+    {
+      field: 'targetEntityId',
+      headerName: 'TargetName',
+      width: 150,
+      sortable: true,
+      valueGetter: (params: any) => {
+        return params.fullName
+      },
+      renderCell: (params: any) => (
+        <Tooltip title={params.value ? params.value : ''} enterDelay={500} enterNextDelay={500}>
+          <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {params.value}
+          </div>
+        </Tooltip>
+      )
+    },
+    {
+      field: 'details',
+      headerName: 'Content',
+      width: 150,
+      sortable: true,
+      renderCell: (params: any) => (
+        <Tooltip title={params.value ? params.value : ''} enterDelay={500} enterNextDelay={500}>
+          <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {params.value}
+          </div>
+        </Tooltip>
+      )
+    },
+    {
+      field: 'state',
+      headerName: 'State',
+      width: 150,
+      sortable: true,
+      renderCell: (params: any) => (
+        <Tooltip title={params.value ? params.value : ''} enterDelay={500} enterNextDelay={500}>
+          <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {params.value}
+          </div>
+        </Tooltip>
+      )
+    },
+    {
+      field: 'images',
+      headerName: 'Evidence',
+      width: 150,
+      sortable: false,
+      disableColumnMenu: true,
+      renderCell: (params: any) => (
+        <>
+          {
+            params.row.images[0] ?
+              <img src={params.row.images[0]} alt="Place" style={{ objectFit: 'cover', height: '100px', width: '100px' }} />
+              : <span>No image</span>
+          }</>
+      ),
+    },
+    {
+      field: 'action',
+      headerName: 'Action',
+      width: 150,
+      sortable: false,
+      disableColumnMenu: true,
+      renderCell: (params: any) => (
+        <Button variant="contained" color="primary" onClick={() => router.push(`reports/${params.row._id}`)}>
+          View Detail
+        </Button>
+      ),
+    },
+  ];
+
   return (
-    <>
-      {reports.length > 0 &&
-        <Table responsive bordered hover>
-          <thead className="bg-light">
-            <tr>
-              <th aria-label="Photo">Avatar</th>
-              <th>
-                User
-              </th>
-              <th>Status</th>
-              <th>Content</th>
-              <th aria-label="Action">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reports
-              .map((report: any) => (
-                <tr>
-                  <td>
-                    <div
-                      className="position-relative mx-auto"
-                      style={{ width: "70px", height: "70px" }}
-                    >
-                      <Image
-                        fill
-                        style={{ objectFit: "contain" }}
-                        alt={report.user.avatarUrl}
-                        sizes="5vw"
-                        src={report.user.avatarUrl}
-                      />
-                    </div>
-                  </td>
-                  <td>{report.user.firstName + " " + report.user.lastName}</td>
-                  <td>
-                    <div
-                    >
-                      {report.state}
-                    </div>
-                  </td>
-                  <td>
-                    <div
-                    >
-                      {report.details}
-                    </div>
-                  </td>
-                  <td>
-                    <div style={{ justifyContent: 'center', display: "flex" }}>
-                      <Link className="btn btn-info" href={`reports/${report._id}`}>
-                        View Detail
-                      </Link>
-                    </div>
-
-
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </Table>
-      }
-    </>
+    <div>
+      <DataGrid
+        rowHeight={120}
+        rows={reports} // assuming 'ads' is your data
+        columns={columns}
+        initialState={{
+          pagination: {
+            paginationModel: { page: 0, pageSize: 10 },
+          },
+        }}
+        rowSelection={false}
+        getRowId={(row: any) => row._id}
+      />
+    </div>
   );
 };
 

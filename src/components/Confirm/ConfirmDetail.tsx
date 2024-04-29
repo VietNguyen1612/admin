@@ -1,33 +1,7 @@
 "use client";
+import { Button, Avatar, Box, Card, CardContent, CardHeader, Container, Grid, List, ListItem, TextField, Typography } from "@mui/material";
 // import { redirect } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
-import { Button } from "react-bootstrap";
-
-interface AutoExpandingTextareaProps {
-  value: string;
-  onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
-}
-
-const AutoExpandingTextarea: React.FC<AutoExpandingTextareaProps> = ({ value, onChange }) => {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${(textareaRef.current.scrollHeight + 5)}px`;
-    }
-  }, [value]);
-
-  return (
-    <textarea
-
-      ref={textareaRef}
-      value={value}
-      onChange={onChange}
-      style={{ width: '100%' }}
-    />
-  );
-};
 
 const ConfirmDetail = (props: any) => {
   const {
@@ -90,204 +64,185 @@ const ConfirmDetail = (props: any) => {
     window.location.reload();
   };
   return (
-    <div>
-      {initialStatus == "pending" ?
-        <div className="">
-          <div className="row">
-            <div className="col-md-8">
-              <div className="card">
-                <div className="card-header">User Image</div>
-                <div className="card-body">
-                  <ul>
-                    {citizen_images.length > 0 && (
-                      <li className="list-group-item">
-                        <span className="fw-bold">Citizen ID Images:</span>
-                      </li>
-                    )}
-                    {citizen_images.map((imageUrl: string, index: number) => (
-                      <li className="list-group-item" key={index}>
-                        <img
-                          src={imageUrl}
-                          alt={`Citizen ID Image ${index + 1}`}
-                          className="img-fluid"
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="card">
-                <div className="card-header">User Details</div>
-                <div className="card-body">
-                  <ul className="list-group list-group-flush">
-                    <li className="list-group-item">
-                      <span className="fw-bold">User ID:</span> {user}
-                    </li>
-
-                    <li className="list-group-item">
-                      <span className="fw-bold">AvatarUrl:</span>
-                      {avatarUrl && <img src={avatarUrl} alt="Avatar" style={{ maxWidth: '100%' }} />}
-                      {/* <textarea
-                        style={{ width: '100%', height: '100%' }}
-                        aria-multiline={true}
+    <Container>
+      {initialStatus === "pending"
+        ? <Grid container spacing={3}>
+          <Grid item xs={12} md={8}>
+            <Card>
+              <CardHeader title="User Details" />
+              <CardContent>
+                <List>
+                  <ListItem>
+                    <span style={{ width: '150px' }}> <strong>User ID:</strong></span>
+                    {user}
+                  </ListItem>
+                  <ListItem>
+                    <Box width={"100%"} display="flex" flexDirection="column" alignItems="flex-start">
+                      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                        <span style={{ width: '150px' }}> <strong>Avatar:</strong></span>
+                        {avatarUrl && <Avatar src={avatarUrl} alt="Avatar" />}</div>
+                      {/* <TextField
+                        multiline
+                        fullWidth
                         value={avatarUrl}
-                        id="avatarUrl"
-                        name="avatarUrl"
                         onChange={(e) => setAvatarUrl(e.target.value)}
                       /> */}
-                      <AutoExpandingTextarea
+                    </Box>
+                  </ListItem>
+                  <ListItem>
+                    <span style={{ width: '150px' }}> <strong>Status:</strong></span>
+                    {initialStatus}
+                  </ListItem>
+                  <ListItem>
+                    <span style={{ width: '150px' }}> <strong>Phone:</strong></span>
+                    {phone}
+                  </ListItem>
+                  <ListItem>
+                    <span style={{ width: '150px' }}> <strong>First Name:</strong></span>
+                    <TextField
+                      value={firstName}
+                      id="firstName"
+                      name="firstName"
+                      type="text"
+                      onChange={(e) => setFirstName(e.target.value)}
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <span style={{ width: '150px' }}> <strong>Last Name:</strong></span>
+                    <TextField
+                      value={lastName}
+                      id="lastName"
+                      name="lastName"
+                      type="text"
+                      onChange={(e) => setLastName(e.target.value)}
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <span style={{ width: '150px' }}> <strong>Date Of Birth:</strong></span>
+                    <TextField
+                      value={dob}
+                      id="dob"
+                      name="dob"
+                      type="date"
+                      onChange={(e) => setDob(e.target.value)}
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <span style={{ width: '150px' }}> <strong>CitizenId:</strong></span>
+                    <TextField
+                      value={citizen_id}
+                      id="citizenId"
+                      name="citizenId"
+                      type="text"
+                      onChange={(e) => setCitizenId(e.target.value)}
+                    />
+                  </ListItem>
+                </List>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+                  <Button variant="contained" color="primary" onClick={handleApprove}>
+                    Approve
+                  </Button>
+                  <Button variant="contained" color="error">
+                    Reject
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Card>
+              <CardHeader title="Verify Image" />
+              <CardContent>
+                <List>
+                  {citizen_images.map((imageUrl: string, index: number) => (
+                    <ListItem key={index}>
+                      <img
+                        src={imageUrl}
+                        alt={`Citizen ID Image ${index + 1}`}
+                        style={{ width: '100%', height: 'auto' }}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </CardContent>
+            </Card>
+          </Grid>
+
+        </Grid>
+        : <Grid container spacing={3}>
+          <Grid item xs={12} md={8}>
+            <Card>
+              <CardHeader title="User Details" />
+              <CardContent>
+                <List>
+                  <ListItem>
+                    <span style={{ width: '150px' }}> <strong>User ID:</strong></span>
+                    {user}
+                  </ListItem>
+                  <ListItem>
+                    <Box width={"100%"} display="flex" flexDirection="column" alignItems="flex-start">
+                      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                        <span style={{ width: '150px' }}> <strong>Avatar:</strong></span>
+                        {avatarUrl && <Avatar src={avatarUrl} alt="Avatar" />}</div>
+
+                      <TextField
+                        multiline
+                        fullWidth
                         value={avatarUrl}
-                        onChange={(e: any) => setAvatarUrl(e.target.value)}
+                        onChange={(e) => setAvatarUrl(e.target.value)}
                       />
-                    </li>
-                    <li className="list-group-item">
-                      <span className="fw-bold">Status:</span> {initialStatus}
-
-                    </li>
-                    <li className="list-group-item">
-                      <span className="fw-bold">Phone Number:</span> {phone}
-
-                    </li>
-                    <li className="list-group-item">
-                      <span className="fw-bold">First Name:</span>
-                      <input
-                        value={firstName}
-                        id="firstName"
-                        name="firstName"
-                        type="text"
-                        onChange={(e) => setFirstName(e.target.value)}
+                    </Box>
+                  </ListItem>
+                  <ListItem>
+                    <span style={{ width: '150px' }}> <strong>Status:</strong></span>
+                    {initialStatus}
+                  </ListItem>
+                  <ListItem>
+                    <span style={{ width: '150px' }}> <strong>Phone:</strong></span>
+                    {phone}
+                  </ListItem>
+                  <ListItem>
+                    <span style={{ width: '150px' }}> <strong>First Name:</strong></span>
+                    {firstName}
+                  </ListItem>
+                  <ListItem>
+                    <span style={{ width: '150px' }}> <strong>Last Name:</strong></span>
+                    {lastName}
+                  </ListItem>
+                  <ListItem>
+                    <span style={{ width: '150px' }}> <strong>Date Of Birth:</strong></span>
+                    {dob}
+                  </ListItem>
+                  <ListItem>
+                    <span style={{ width: '150px' }}> <strong>CitizenId:</strong></span>
+                    {citizen_id}
+                  </ListItem>
+                </List>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Card>
+              <CardHeader title="Verify Image" />
+              <CardContent>
+                <List>
+                  {citizen_images.map((imageUrl: string, index: number) => (
+                    <ListItem key={index}>
+                      <img
+                        src={imageUrl}
+                        alt={`Citizen ID Image ${index + 1}`}
+                        style={{ width: '100%', height: 'auto' }}
                       />
-                    </li>
-                    <li className="list-group-item">
-                      <span className="fw-bold">Last Name:</span>
-                      <input
-                        value={lastName}
-                        id="lastName"
-                        name="lastName"
-                        type="text"
-                        onChange={(e) => setLastName(e.target.value)}
-                      />
-                    </li>
-                    <li className="list-group-item">
-                      <span className="fw-bold">Date of Birth:</span>
-                      <input
-                        value={dob}
-                        id="dob"
-                        name="dob"
-                        type="date"
-                        onChange={(e) => setDob(e.target.value)}
-                      />
-                    </li>
-                    <li className="list-group-item">
-                      <span className="fw-bold">Citizen ID:</span>
-                      <input
-                        value={citizen_id}
-                        id="citizenId"
-                        name="citizenId"
-                        type="text"
-                        onChange={(e) => setCitizenId(e.target.value)}
-                      />
-                    </li>
-                    <li className="list-group-item">
-                      <span className="fw-bold">Created At:</span>{" "}
-                      {new Date(createdAt).toLocaleDateString()}
-                    </li>
-                    <li className="list-group-item">
-                      <span className="fw-bold">Updated At:</span>{" "}
-                      {new Date(updatedAt).toLocaleDateString()}
-                    </li>
-                  </ul>
+                    </ListItem>
+                  ))}
+                </List>
+              </CardContent>
+            </Card>
+          </Grid>
 
-                  <div className="d-flex justify-content-center gap-3">
-                    <button onClick={handleApprove} className="btn btn-info">Approve</button>
-                    <button className="btn btn-danger">Reject</button>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        : <div className="">
-          <div className="row">
-            <div className="col-md-8">
-              <div className="card">
-                <div className="card-header">User Image</div>
-                <div className="card-body">
-                  <ul>
-                    {citizen_images.length > 0 && (
-                      <li className="list-group-item">
-                        <span className="fw-bold">Citizen ID Images:</span>
-                      </li>
-                    )}
-                    {citizen_images.map((imageUrl: string, index: number) => (
-                      <li className="list-group-item" key={index}>
-                        <img
-                          src={imageUrl}
-                          alt={`Citizen ID Image ${index + 1}`}
-                          className="img-fluid"
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="card">
-                <div className="card-header">User Details</div>
-                <div className="card-body">
-                  <ul className="list-group list-group-flush">
-                    <li className="list-group-item">
-                      <span className="fw-bold">User ID:</span> {user}
-                    </li>
-
-                    <li className="list-group-item">
-                      <span className="fw-bold">AvatarUrl: </span>
-                      {avatarUrl}
-                      {avatarUrl && <img src={avatarUrl} alt="Avatar" style={{ maxWidth: '100%' }} />}
-
-                    </li>
-                    <li className="list-group-item">
-                      <span className="fw-bold">Status:</span> {initialStatus}
-                    </li>
-                    <li className="list-group-item">
-                      <span className="fw-bold">Phone Number:</span> {phone}
-                    </li>
-                    <li className="list-group-item">
-                      <span className="fw-bold">First Name:</span> {firstName}
-
-                    </li>
-                    <li className="list-group-item">
-                      <span className="fw-bold">Last Name:</span> lastName
-
-                    </li>
-                    <li className="list-group-item">
-                      <span className="fw-bold">Date of Birth:</span> {dob}
-
-                    </li>
-                    <li className="list-group-item">
-                      <span className="fw-bold">Citizen ID:</span> {citizen_id}
-
-                    </li>
-                    <li className="list-group-item">
-                      <span className="fw-bold">Created At:</span>{" "}
-                      {new Date(createdAt).toLocaleDateString()}
-                    </li>
-                    <li className="list-group-item">
-                      <span className="fw-bold">Updated At:</span>{" "}
-                      {new Date(updatedAt).toLocaleDateString()}
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        </Grid>
       }
-    </div>
+    </Container>
   );
 };
 

@@ -1,41 +1,112 @@
 "use client"
-import { Button, Card, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Table } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
-import { newResource, Resource } from "@/models/resource";
-import { Pokemon } from "@/models/pokemon";
-import useSWRAxios, { transformResponseWrapper } from "@/hooks/useSWRAxios";
-import Pagination from "@/components/Pagination/Pagination";
 import { useRouter } from "next/navigation";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsisVertical, faPlus } from "@fortawesome/free-solid-svg-icons";
 import UserList from "@/components/User/UserList";
-import { User } from "@/models/user";
-import THSort from "@/components/TableSort/THSort";
-import Image from "next/image";
-import UserActiveType from "@/components/User/UserActiveTypeLabel";
-import Link from "next/link";
+import axios from "axios";
+import { DataGrid } from "@mui/x-data-grid";
+import { Box, Button, Tooltip } from "@mui/material";
+import { returnFormattedDate } from "@/hooks/regex";
 
 export default function Index() {
   const [users, setUsers] = useState([])
+  const router = useRouter()
+  const fetchData = async () => {
+    const userListURL = `http://localhost:3056/api/v1/user`;
+    const data = await axios.get(userListURL)
+
+    setUsers(data.data.metadata)
+  }
   useEffect(() => {
-    const fetchData = async () => {
-      const userListURL = `http://localhost:3056/api/v1/user` || "";
-      const data = await fetch(userListURL);
-      const res = await data.json();
-      // const users = res.metadata as Array<any>;
-      setUsers(res.metadata)
-    }
     fetchData()
   }, [])
+  const columns = [
+    {
+      field: 'avatarUrl',
+      headerName: 'Avatar',
+      width: 170,
+      sortable: false,
+      disableColumnMenu: true,
+      renderCell: (params: any) => (
+        <img src={params.value} alt="Place" style={{ objectFit: 'cover', height: '100px', width: '100px' }} />
+      ),
+    },
+    {
+      field: 'fullname',
+      headerName: 'Full Name',
+      width: 170,
+      sortable: false,
+      renderCell: (params: any) => (
+        <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {params.row.firstName + ' ' + params.row.lastName}
+        </div>
+      )
+    },
+    {
+      field: 'phone',
+      headerName: 'Phone Number',
+      width: 170,
+      sortable: false,
+      renderCell: (params: any) => (
+        <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {params.value}
+        </div>
+      )
+    },
+    {
+      field: 'isActive',
+      headerName: 'Status',
+      width: 150,
+      sortable: true,
+      renderCell: (params: any) => (
+        <Tooltip title={params.value ? params.value : ''} enterDelay={500} enterNextDelay={500}>
+          <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {params.value.toString()}
+          </div>
+        </Tooltip>
+      )
+    },
+    {
+      field: 'updatedAt',
+      headerName: 'Create Date',
+      width: 150,
+      sortable: true,
+      renderCell: (params: any) => (
+        <div>
+          {returnFormattedDate(params.row.createdAt)}
+        </div>
+      ),
+      sortComparator: (v1: any, v2: any, cellParams1: any, cellParams2: any) => new Date(v1).getTime() - new Date(v2).getTime(),
+    },
+    {
+      field: 'action',
+      headerName: 'Action',
+      width: 150,
+      disableColumnMenu: true,
+      sortable: false,
+      renderCell: (params: any) => (
+        <Button variant="contained" color="primary" onClick={() => router.push(`users/${params.row._id}`)}>
+          View Detail
+        </Button>
+      ),
+    },
+  ];
   return (
-    // <Card>
-    //   <Card.Header>Users</Card.Header>
-    //   <Card.Body>
-
-    //   </Card.Body>
-    // </Card>
-    <div>
-      <UserList users={users} />
+    <div className='d-flex align-items-center justify-content-center'>
+      <Box>
+        <DataGrid
+          rowHeight={120}
+          rows={users}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 10 },
+            },
+          }}
+          // pageSizeOptions={[10, 15]}
+          rowSelection={false}
+          getRowId={(row: any) => row._id}
+        />
+      </Box>
     </div>
   );
 }

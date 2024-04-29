@@ -1,15 +1,19 @@
 "use client"
 
+import { Tooltip, Button } from "@mui/material";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { Button, Card, Table } from "react-bootstrap";
+
+
 
 const PlacesPage = () => {
+
+
   const [places, setPlaces] = useState([])
-  const [search, setSearch] = useState('');
   const router = useRouter()
   useEffect(() => {
     const fetchData = async () => {
@@ -20,66 +24,81 @@ const PlacesPage = () => {
     }
     fetchData()
   }, [])
-  const handleSearch = (event: any) => {
-    setSearch(event.target.value);
-  };
-
-  const filteredPlaces = places.filter((place: any) =>
-    place.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const columns = [
+    {
+      field: 'name', headerName: 'Name', width: 170,
+      renderCell: (params: any) => (
+        <Tooltip title={params.value ? params.value.toString() : ''} enterDelay={500} enterNextDelay={500}>
+          <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {params.value}
+          </div>
+        </Tooltip>
+      )
+    },
+    { field: 'type', headerName: 'Type', width: 130 },
+    {
+      field: 'address',
+      headerName: 'Address',
+      width: 200,
+      renderCell: (params: any) => (
+        <Tooltip title={params.value ? params.value.toString() : ''} enterDelay={500} enterNextDelay={500}>
+          <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {params.value}
+          </div>
+        </Tooltip>
+      ),
+    },
+    { field: 'phone', headerName: 'Phone', width: 130 },
+    {
+      field: 'website', headerName: 'Website', width: 130,
+      renderCell: (params: any) => (
+        <Tooltip title={params.value ? params.value.toString() : ''} enterDelay={500} enterNextDelay={500}>
+          <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {params.value}
+          </div>
+        </Tooltip>
+      ),
+    },
+    {
+      field: 'images',
+      headerName: 'Images',
+      width: 130,
+      sortable: false,
+      disableColumnMenu: true,
+      renderCell: (params: any) => (
+        <img src={params.value[0]} alt="Place" style={{ objectFit: 'cover', height: '100px', width: '100px' }} />
+      ),
+    },
+    {
+      field: 'action',
+      headerName: 'Action',
+      width: 150,
+      sortable: false,
+      disableColumnMenu: true,
+      renderCell: (params: any) => (
+        <Button variant="contained" color="primary" onClick={() => router.push(`/detail/${params.row._id}`)}>
+          View Detail
+        </Button>
+      ),
+    },
+  ];
   return (
     <>
-      <input
-        style={{ width: '100%', marginBottom: '15px' }}
-        type="text"
-        placeholder="Search by name"
-        value={search}
-        onChange={handleSearch}
-      />
       <Button style={{ marginBottom: '15px' }} onClick={() => router.push('./add-place')}>Add place</Button>
-      <Table responsive bordered hover>
-        <thead className="bg-light">
-          <tr>
-            <th className="text-center">Name</th>
-            <th className="text-center">Province</th>
-            <th className="text-center">Image</th>
-            <th className="text-center">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredPlaces.map((place: any) => (
-            <tr key={place._id}>
-              <td className="text-center">
-                <div style={{ maxWidth: '200px' }}>
-                  {place.name}
-                </div>
 
-              </td>
-              <td className="text-center">{place.province}</td>
-              <td>
-                <div
-                  className="position-relative mx-auto"
-                  style={{ width: "150px", height: "150px" }}
-                >
-                  <Image
-                    fill
-                    style={{ objectFit: "cover" }}
-                    alt={place.images[0]}
-                    src={place.images[0]}
-                  />
-                </div>
-              </td>
-              <td className="text-center">
-                <div>
-                  <Button
-                    onClick={() => { router.push(`./places/${place.place_id}`) }}>
-                    Detail</Button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      <DataGrid
+        rowHeight={120}
+        rows={places}
+        columns={columns}
+        initialState={{
+          pagination: {
+            paginationModel: { page: 0, pageSize: 10 },
+          },
+        }}
+        // pageSizeOptions={[10, 15]}
+        rowSelection={false}
+        getRowId={(row: any) => row._id}
+      />
     </>
   );
 };

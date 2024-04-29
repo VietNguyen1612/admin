@@ -5,17 +5,20 @@ import UserActiveType from '@/components/User/UserActiveTypeLabel'
 import { returnFormattedDate } from '@/hooks/regex'
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Tooltip } from '@mui/material'
+import { DataGrid } from '@mui/x-data-grid'
 import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
-import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Modal, Table } from 'react-bootstrap'
+import { ButtonGroup, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Modal, Table } from 'react-bootstrap'
 
 function Index() {
     const [ads, setAds] = useState([])
     const [openModal, setOpenModal] = useState(false)
     const [denyReason, setDenyReason] = useState("")
     const [reload, setReload] = useState(false)
+    const [modalId, setModalId] = useState('');
     useEffect(() => {
         const fetchData = async () => {
             const res = await axios.get(
@@ -52,26 +55,25 @@ function Index() {
 
     const renderModal = (id: string) => {
         return (
-            <Modal show={openModal} onHide={() => { setOpenModal(false) }}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Modal heading</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <div className="fw-bold w-100">Deny reason:</div>
-                    <input
-                        className="w-100"
+            <Dialog open={openModal} onClose={() => { setOpenModal(false) }}>
+                <DialogTitle>Advertisement {id}</DialogTitle>
+                <DialogContent>
+                    <strong>Rejecting reason:</strong>
+                    <TextField
+                        fullWidth
+                        multiline
                         value={denyReason}
                         id="firstName"
                         name="firstName"
                         type="text"
                         onChange={(e) => setDenyReason(e.target.value)}
                     />
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => { setOpenModal(false) }}>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => { setOpenModal(false) }}>
                         Cancel
                     </Button>
-                    <Button variant="primary" onClick={async () => {
+                    <Button onClick={async () => {
                         await validate({ id: id, isValid: false, msg: denyReason })
                         window.alert('validate success')
                         setReload(!reload)
@@ -79,8 +81,8 @@ function Index() {
                     }}>
                         Confirm
                     </Button>
-                </Modal.Footer>
-            </Modal>
+                </DialogActions>
+            </Dialog>
         )
     }
 
@@ -89,141 +91,89 @@ function Index() {
 
         setReload(!reload)
     }
-    const handleReject = () => {
+    const handleReject = (id: string) => {
         setOpenModal(true)
+        setModalId(id);
     }
+    const columns = [
+        {
+            field: 'image',
+            headerName: 'Photo',
+            width: 200,
+            sortable: false,
+            disableColumnMenu: true,
+            renderCell: (params: any) => (
+                <img src={params.value} alt="Place" style={{ objectFit: 'contain', height: '150px', width: '150px' }} />
+            ),
+        },
+        {
+            field: 'userId',
+            width: 200,
+            headerName: 'UserName',
+            renderCell: (params: any) => (
+                <Tooltip title={params.value ? `${params.row.userId.firstName + " " + params.row.userId.lastName}` : ''} enterDelay={500} enterNextDelay={500}>
+                    <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {params.row.userId.firstName + " " + params.row.userId.lastName}
+                    </div>
+                </Tooltip>
+            )
+        },
+        {
+            field: 'createdAt',
+            headerName: 'Created At',
+            width: 200,
+            renderCell: (params: any) => (
+                <div>
+                    {returnFormattedDate(params.row.createdAt)}
+                </div>
+            ),
+            sortComparator: (v1: any, v2: any, cellParams1: any, cellParams2: any) => new Date(v1).getTime() - new Date(v2).getTime(),
+        },
+        {
+            field: 'button',
+            headerName: 'Action',
+            width: 200,
+            sortable: false,
+            disableColumnMenu: true,
+            renderCell: (params: any) => (
+                <div>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleApprove(params.row._id)}>
+                        approve
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => handleReject(params.row._id)}>
+                        reject</Button>
+                </div>
+            )
+        },
+    ];
     return (
-        <div>
+        <div className='d-flex align-items-center justify-content-center'>
+            {openModal && renderModal(modalId)}
+            {ads.length === 0
+                ? <text>There is no advertisement</text>
+                :
+                <Box sx={{ width: '80%' }}>
+                    <DataGrid
+                        rowHeight={120}
+                        rows={ads}
+                        columns={columns}
+                        initialState={{
+                            pagination: {
+                                paginationModel: { page: 0, pageSize: 10 },
+                            },
+                        }}
+                        rowSelection={false}
+                        getRowId={(row: any) => row._id}
+                    />
+                </Box>
+            }
 
-            <Table responsive bordered hover>
-                <thead className="bg-light">
-                    <tr>
-                        <th aria-label="Photo">Photo</th>
-                        <th className="text-center">
-                            UserName
-                        </th>
-                        <th className="text-center">Valid Status</th>
-                        <th className="text-center">Paid Status</th>
-                        <th className="text-center">Expired Status</th>
-                        <th className="text-center">Paid At</th>
-                        <th className="text-center">Expires At</th>
-                        <th className="text-center">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {ads.map((ad: any) => {
-                        console.log(ad)
-                        return (
-                            <>
-                                {openModal && renderModal(ad._id)}
-                                <tr key={ad._id}>
-                                    <td>
-                                        <div
-                                            className="position-relative mx-auto"
-                                            style={{ width: "70px", height: "70px" }}
-                                        >
-                                            <Image
-                                                fill
-                                                style={{ objectFit: "contain" }}
-                                                alt={ad.image}
-                                                sizes="5vw"
-                                                src={ad.image}
-                                            />
-                                        </div>
-                                    </td>
-                                    <td >
-                                        <div className="
-                            text-center 
-                            d-flex 
-                            justify-content-center 
-                            align-items-center"
-                                            style={{ height: '85px' }}>
-                                            {ad.userId.firstName + " " + ad.userId.lastName}
-                                        </div>
-
-                                    </td>
-                                    <td >
-                                        <div className="
-                            text-center 
-                            d-flex 
-                            flex-column                
-                            justify-content-center 
-                            align-items-center"
-                                            style={{ height: '85px' }}>
-                                            {(ad.isValid).toString()}
-                                        </div>
-
-                                    </td>
-                                    <td >
-                                        <div className="
-                            text-center 
-                            d-flex 
-                            flex-column                
-                            justify-content-center 
-                            align-items-center"
-                                            style={{ height: '85px' }}>{(ad.isPaid).toString()}</div>
-                                    </td>
-                                    <td >
-                                        <div className="
-                            text-center 
-                            d-flex 
-                            flex-column                
-                            justify-content-center 
-                            align-items-center"
-                                            style={{ height: '85px' }}>
-                                            {(ad.isExpired).toString()}
-                                        </div>
-                                    </td>
-                                    <td >
-                                        <div className="
-                            text-center 
-                            d-flex 
-                            flex-column                
-                            justify-content-center 
-                            align-items-center"
-                                            style={{ height: '85px' }}>
-                                            {ad.paidAt != undefined ? returnFormattedDate(ad.paidAt) : "Chưa thanh toán"}
-                                        </div>
-                                    </td>
-                                    <td >
-                                        <div className="
-                            text-center 
-                            d-flex 
-                            flex-column                
-                            justify-content-center 
-                            align-items-center"
-                                            style={{ height: '85px' }}>
-                                            {
-                                                ad.paidAt != undefined ?
-                                                    returnExpriyDate(ad.paidAt)
-                                                    : "Chưa thanh toán"
-                                            }
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="
-                            text-center 
-                            d-flex       
-                            justify-content-center 
-                            align-items-center"
-                                            style={{ height: '85px' }}>
-                                            <Button
-                                                className='mx-auto bg-success'
-                                                onClick={() => handleApprove(ad._id)}>
-                                                approve</Button>
-                                            <Button
-                                                className='bg-danger'
-                                                onClick={handleReject}>
-                                                reject</Button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </>
-
-                        )
-                    })}
-                </tbody>
-            </Table>
         </div>
     )
 }

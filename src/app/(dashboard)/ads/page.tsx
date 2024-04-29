@@ -5,6 +5,8 @@ import UserActiveType from '@/components/User/UserActiveTypeLabel'
 import { returnFormattedDate } from '@/hooks/regex'
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Chip, Tooltip } from '@mui/material'
+import { DataGrid } from '@mui/x-data-grid'
 import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -12,15 +14,108 @@ import React, { useEffect, useState } from 'react'
 import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Table } from 'react-bootstrap'
 
 function Index() {
+    const columns = [
+        {
+            field: 'image',
+            headerName: 'Photo',
+            width: 150,
+            sortable: false,
+            disableColumnMenu: true,
+            renderCell: (params: any) => (
+                <img src={params.value} alt="Place" style={{ objectFit: 'cover', height: '100px', width: '100px' }} />
+            ),
+        },
+        {
+            field: 'userId',
+            headerName: 'UserName',
+            width: 150,
+            sortable: true,
+            valueGetter: (params: any) => {
+                return params.fullName
+            },
+            renderCell: (params: any) => (
+                <Tooltip title={params.row.userId.fullName ? params.row.userId.fullName : ''} enterDelay={500} enterNextDelay={500}>
+                    <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {params.row.userId.fullName}
+                    </div>
+                </Tooltip>
+            )
+        },
+        {
+            field: 'isValid',
+            headerName: 'Valid Status',
+            width: 150,
+            sortable: false,
+            disableColumnMenu: true,
+            renderCell: (params: any) => (
+                <Chip
+                    label={params.row.isValid.toString()}
+                    style={{ backgroundColor: params.row.isValid ? "green" : "red", color: 'white' }} />
+            )
+        },
+        {
+            field: 'isPaid',
+            headerName: 'Paid Status',
+            width: 150,
+            sortable: false,
+            disableColumnMenu: true,
+            renderCell: (params: any) => (
+                <Chip
+                    label={params.row.isPaid.toString()}
+                    style={{ backgroundColor: params.row.isPaid ? "green" : "red", color: 'white' }} />
+            ),
+        },
+        {
+            field: 'isExpired',
+            headerName: 'Expired Status',
+            width: 150,
+            sortable: false,
+            disableColumnMenu: true,
+            renderCell: (params: any) => (
+                <Chip
+                    label={params.row.isExpired.toString()}
+                    style={{ backgroundColor: params.row.isExpired ? "green" : "red", color: 'white' }} />
+            ),
+        },
+        {
+            field: 'paidAt',
+            headerName: 'Paid At',
+            width: 150,
+            renderCell: (params: any) => (
+                <div>
+                    {returnFormattedDate(params.row.paidAt)}
+                </div>
+            ),
+            sortComparator: (v1: any, v2: any, cellParams1: any, cellParams2: any) => new Date(v1).getTime() - new Date(v2).getTime(),
+        },
+        {
+            field: 'expiresAt',
+            headerName: 'Expires At',
+            width: 150,
+            sortable: false,
+            disableColumnMenu: true,
+            renderCell: (params: any) => (
+                <div>
+                    {returnExpriyDate(params.row.paidAt)}
+                </div>
+            )
+        },
+    ];
     const [ads, setAds] = useState([])
     useEffect(() => {
         const fetchData = async () => {
             const res = await axios.get(`http://localhost:3056/api/v1/ads`)
-            setAds(res.data['metadata'])
+            const filteredAds = res.data['metadata'].filter((ad: any) => {
+                if (ad.paidAt && ad.paidAt !== null)
+                    return ad
+            })
+            setAds(filteredAds)
+
         }
         fetchData()
-    }, [])
 
+    }, [])
+    console.log(JSON.stringify(ads))
     const returnExpriyDate = (dateString: string) => {
         let date = new Date(dateString);
         date.setDate(date.getDate() + 5);
@@ -29,145 +124,18 @@ function Index() {
     }
     return (
         <div>
-            <Table responsive bordered hover>
-                <thead className="bg-light">
-                    <tr>
-                        <th aria-label="Photo">Photo</th>
-                        <th className="text-center">
-                            UserName
-                        </th>
-                        <th className="text-center">Valid Status</th>
-                        <th className="text-center">Paid Status</th>
-                        <th className="text-center">Expired Status</th>
-                        <th className="text-center">Paid At</th>
-                        <th className="text-center">Expires At</th>
-                        <th className="text-center">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {ads.map((ad: any) => {
-                        console.log(ad)
-                        return (
-                            <tr key={ad._id}>
-                                <td>
-                                    <div
-                                        className="position-relative mx-auto"
-                                        style={{ width: "70px", height: "70px" }}
-                                    >
-                                        <Image
-                                            fill
-                                            style={{ objectFit: "contain" }}
-                                            alt={ad.image}
-                                            sizes="5vw"
-                                            src={ad.image}
-                                        />
-                                    </div>
-                                </td>
-                                <td >
-                                    <div className="
-                            text-center 
-                            d-flex 
-                            justify-content-center 
-                            align-items-center"
-                                        style={{ height: '85px' }}>
-                                        {ad.userId.firstName + " " + ad.userId.lastName}
-                                    </div>
-
-                                </td>
-                                <td >
-                                    <div className="
-                            text-center 
-                            d-flex 
-                            flex-column                
-                            justify-content-center 
-                            align-items-center"
-                                        style={{ height: '85px' }}>
-                                        {(ad.isValid).toString()}
-                                    </div>
-
-                                </td>
-                                <td >
-                                    <div className="
-                            text-center 
-                            d-flex 
-                            flex-column                
-                            justify-content-center 
-                            align-items-center"
-                                        style={{ height: '85px' }}>{(ad.isPaid).toString()}</div>
-                                </td>
-                                <td >
-                                    <div className="
-                            text-center 
-                            d-flex 
-                            flex-column                
-                            justify-content-center 
-                            align-items-center"
-                                        style={{ height: '85px' }}>
-                                        {(ad.isExpired).toString()}
-                                    </div>
-                                </td>
-                                <td >
-                                    <div className="
-                            text-center 
-                            d-flex 
-                            flex-column                
-                            justify-content-center 
-                            align-items-center"
-                                        style={{ height: '85px' }}>
-                                        {ad.paidAt != undefined ? returnFormattedDate(ad.paidAt) : "Chưa thanh toán"}
-                                    </div>
-                                </td>
-                                <td >
-                                    <div className="
-                            text-center 
-                            d-flex 
-                            flex-column                
-                            justify-content-center 
-                            align-items-center"
-                                        style={{ height: '85px' }}>
-                                        {
-                                            ad.paidAt != undefined ?
-                                                returnExpriyDate(ad.paidAt)
-                                                : "Chưa thanh toán"
-                                        }
-                                    </div>
-                                </td>
-                                <td>
-                                    <Dropdown align="end">
-                                        <div className="
-                            text-center 
-                            d-flex 
-                            flex-column                
-                            justify-content-center 
-                            align-items-center"
-                                            style={{ height: '85px' }}>
-                                            <DropdownToggle
-                                                as="button"
-                                                bsPrefix="btn"
-                                                className="btn-link rounded-0 text-black-50 shadow-none p-0"
-                                            //   id={`action-${user._id}`}
-                                            >
-                                                <FontAwesomeIcon fixedWidth icon={faEllipsisVertical} />
-                                            </DropdownToggle>
-                                        </div>
-
-
-                                        <DropdownMenu>
-                                            <DropdownItem >Info</DropdownItem>
-                                            <Link href={`users/`} passHref legacyBehavior>
-                                                <DropdownItem>Edit</DropdownItem>
-                                            </Link>
-                                            <DropdownItem className="text-danger" href="#/action-3">
-                                                Block
-                                            </DropdownItem>
-                                        </DropdownMenu>
-                                    </Dropdown>
-                                </td>
-                            </tr>
-                        )
-                    })}
-                </tbody>
-            </Table>
+            <DataGrid
+                rowHeight={120}
+                rows={ads} // assuming 'ads' is your data
+                columns={columns}
+                initialState={{
+                    pagination: {
+                        paginationModel: { page: 0, pageSize: 10 },
+                    },
+                }}
+                rowSelection={false}
+                getRowId={(row: any) => row._id}
+            />
         </div>
     )
 }
