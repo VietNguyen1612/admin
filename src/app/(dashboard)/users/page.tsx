@@ -69,7 +69,7 @@ export default function Index() {
       ),
     },
     {
-      field: "isActive",
+      field: "isValid",
       headerName: "Status",
       width: 150,
       sortable: true,
@@ -81,11 +81,12 @@ export default function Index() {
         >
           <div
             style={{
+              whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
             }}
           >
-            {params.value.toString()}
+            {params.value == true ? "Valid" : "Not valid"}
           </div>
         </Tooltip>
       ),

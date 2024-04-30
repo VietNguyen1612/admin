@@ -101,7 +101,7 @@ const PlacesPage = () => {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => router.push(`/detail/${params.row._id}`)}
+          onClick={() => router.push(`/places/${params.row.place_id}`)}
         >
           View Detail
         </Button>
