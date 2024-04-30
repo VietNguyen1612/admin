@@ -154,7 +154,7 @@ const ConfirmDetail = (props: any) => {
                       onChange={(e) => setLastName(e.target.value)}
                     />
                   </ListItem>
-                  <ListItem>
+                  {/* <ListItem>
                     <span style={{ width: "150px" }}>
                       {" "}
                       <strong>Date Of Birth:</strong>
@@ -179,7 +179,7 @@ const ConfirmDetail = (props: any) => {
                       type="text"
                       onChange={(e) => setCitizenId(e.target.value)}
                     />
-                  </ListItem>
+                  </ListItem> */}
                 </List>
                 <div
                   style={{
@@ -285,7 +285,7 @@ const ConfirmDetail = (props: any) => {
                     </span>
                     {lastName}
                   </ListItem>
-                  <ListItem>
+                  {/* <ListItem>
                     <span style={{ width: "150px" }}>
                       {" "}
                       <strong>Date Of Birth:</strong>
@@ -298,7 +298,7 @@ const ConfirmDetail = (props: any) => {
                       <strong>CitizenId:</strong>
                     </span>
                     {citizen_id}
-                  </ListItem>
+                  </ListItem> */}
                 </List>
               </CardContent>
             </Card>
