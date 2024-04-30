@@ -184,13 +184,6 @@ const ConfirmDetail = (props: any) => {
                       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                         <span style={{ width: '150px' }}> <strong>Avatar:</strong></span>
                         {avatarUrl && <Avatar src={avatarUrl} alt="Avatar" />}</div>
-
-                      <TextField
-                        multiline
-                        fullWidth
-                        value={avatarUrl}
-                        onChange={(e) => setAvatarUrl(e.target.value)}
-                      />
                     </Box>
                   </ListItem>
                   <ListItem>

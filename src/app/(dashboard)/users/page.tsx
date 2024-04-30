@@ -53,14 +53,14 @@ export default function Index() {
       )
     },
     {
-      field: 'isActive',
+      field: 'isValid',
       headerName: 'Status',
       width: 150,
       sortable: true,
       renderCell: (params: any) => (
         <Tooltip title={params.value ? params.value : ''} enterDelay={500} enterNextDelay={500}>
           <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {params.value.toString()}
+            {params.value == true ? 'Valid' : 'Not valid'}
           </div>
         </Tooltip>
       )
