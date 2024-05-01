@@ -55,11 +55,15 @@ export default function SidebarNav() {
       <SidebarNavItem icon={faDroplet} href="/users">
         All user
       </SidebarNavItem>
-      <SidebarNavItem icon={faPencil} href="/reports">
-        Reports
-      </SidebarNavItem>
       <SidebarNavItem icon={faPencil} href="/confirm">
         Confirmation
+      </SidebarNavItem>
+      <SidebarNavTitle>Reports</SidebarNavTitle>
+      <SidebarNavItem icon={faPencil} href="/reports">
+        User Reports
+      </SidebarNavItem>
+      <SidebarNavItem icon={faPencil} href="/reports/post">
+        Post Reports
       </SidebarNavItem>
       <SidebarNavTitle>Places</SidebarNavTitle>
       <SidebarNavItem icon={faPencil} href="/places">

@@ -10,7 +10,6 @@ import React, { useEffect, useState } from "react";
 const ReportDetail = ({ params }: { params: { id: string } }) => {
   const [report, setReport] = useState<any>()
   const [adminComment, setAdminComment] = useState('');
-  const [unblockIn, setUnblockIn] = useState(10);
   const [open, setOpen] = useState(false);
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === 'clickaway') {
@@ -40,7 +39,6 @@ const ReportDetail = ({ params }: { params: { id: string } }) => {
       reportId: id,
       state: status,
       adminComment: adminComment,
-      unblockIn: unblockIn,
       reason: report.details
     })
     fetchData()
@@ -60,10 +58,10 @@ const ReportDetail = ({ params }: { params: { id: string } }) => {
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <Card>
-                <Grid container spacing={3}>
+                <Grid container spacing={5}>
                   <Grid item xs={12} md={6}>
                     <CardContent>
-                      <Typography style={{ marginBottom: '10px' }} variant="h5" component="div">
+                      <Typography style={{ marginBottom: '10px' }} component="div">
                         {report.user.firstName} {report.user.lastName}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
@@ -75,9 +73,9 @@ const ReportDetail = ({ params }: { params: { id: string } }) => {
                       <Typography variant="body2" color="text.secondary">
                         Valid: {report.user.isValid.toString()}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      {/* <Typography variant="body2" color="text.secondary">
                         CitizenId: {report.user.attributes.citizen_id.length > 0 ? report.user.attributes.citizen_id.length : "Empty"}
-                      </Typography>
+                      </Typography> */}
                     </CardContent>
                   </Grid>
                   <Grid item xs={12} md={6}>
@@ -92,12 +90,12 @@ const ReportDetail = ({ params }: { params: { id: string } }) => {
                 <GridArrowDownwardIcon />
               </div>
               <Card>
-                <Grid container spacing={3}>
+                <Grid container spacing={5}>
                   <Grid item xs={12} md={6}>
                     <CardContent>
-                      <Typography style={{ marginBottom: '10px' }} variant="h5" component="div">
+                      <Typography style={{ marginBottom: '10px' }} component="div">
                         {report.targetEntityId.firstName} {report.targetEntityId.lastName}
-                        {report.targetEntityId.isBlock && <span>(Blocked)</span>}
+                        {report.targetEntityId.isBlock && <span> (Blocked)</span>}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
                         Phone: {report.targetEntityId.phone}
@@ -108,9 +106,9 @@ const ReportDetail = ({ params }: { params: { id: string } }) => {
                       <Typography variant="body2" color="text.secondary">
                         Valid: {report.targetEntityId.isValid.toString()}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      {/* <Typography variant="body2" color="text.secondary">
                         CitizenId: {report.targetEntityId.attributes.citizen_id.length > 0 ? report.targetEntityId.attributes.citizen_id.length : "Empty"}
-                      </Typography>
+                      </Typography> */}
                     </CardContent>
                   </Grid>
                   <Grid item xs={12} md={6}>
@@ -136,26 +134,10 @@ const ReportDetail = ({ params }: { params: { id: string } }) => {
                   <Typography variant="body2" color="text.secondary">
                     Details: {report.details}
                   </Typography>
-                  {report.state === 'pending' && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                      <Typography variant="body2" color="text.secondary">
-                        Block days:
-                      </Typography>
-                      <TextField
-                        style={{ width: '70px' }}
-                        inputProps={{ min: 10 }}
-                        size="small"
-                        variant="outlined"
-                        type="number"
-                        defaultValue={0}
-                        value={unblockIn}
-                        onChange={(e) => setUnblockIn(Number(e.target.value))}
-                      />
-                    </div>
-                  )}
+
                   {report.state === 'approve' && (
                     <Typography variant="body2" color="text.secondary">
-                      Block days: {report.block.unblockIn}
+                      Resolve At:  {returnFormattedDate(report.block.createdAt)}
                     </Typography>
                   )}
 

@@ -53,7 +53,7 @@ const ReportPage = () => {
     },
     {
       field: "targetPhoto",
-      headerName: "Target Photo",
+      headerName: "Reported User Photo",
       width: 150,
       sortable: false,
       disableColumnMenu: true,
@@ -67,7 +67,7 @@ const ReportPage = () => {
     },
     {
       field: "targetEntityId",
-      headerName: "TargetName",
+      headerName: "Reported User",
       width: 150,
       sortable: true,
       valueGetter: (params: any) => {

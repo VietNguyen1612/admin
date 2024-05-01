@@ -35,6 +35,11 @@ const Index = ({ params }: { params: { id: string } }) => {
               />
               <CardContent>
                 <List>
+                  {user.isBlock ?
+                    <ListItem>
+                      <strong style={{ color: 'red' }}>This user has been blocked</strong>
+                    </ListItem>
+                    : <></>}
                   <ListItem>
                     <span style={{ width: '150px' }}> <strong>Name:</strong></span>
                     {user.firstName + user.lastName}
@@ -52,7 +57,6 @@ const Index = ({ params }: { params: { id: string } }) => {
                     <span style={{ width: '150px' }}> <strong>Valid:</strong></span>
                     {user['isValid'].toString()}
                   </ListItem>
-
                 </List>
               </CardContent>
             </Card>

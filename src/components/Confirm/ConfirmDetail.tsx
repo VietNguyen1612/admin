@@ -69,6 +69,7 @@ const ConfirmDetail = (props: any) => {
     const response = await axios.post(`http://localhost:3056/api/v1/confirm/reject`, {
       id: _id
     })
+    window.location.reload();
   }
   return (
     <Container>
