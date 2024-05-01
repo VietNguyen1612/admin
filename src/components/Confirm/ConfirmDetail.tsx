@@ -1,5 +1,6 @@
 "use client";
 import { Button, Avatar, Box, Card, CardContent, CardHeader, Container, Grid, List, ListItem, TextField, Typography } from "@mui/material";
+import axios from "axios";
 // import { redirect } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -63,6 +64,12 @@ const ConfirmDetail = (props: any) => {
     );
     window.location.reload();
   };
+
+  const handleReject = async () => {
+    const response = await axios.post(`http://localhost:3056/api/v1/confirm/reject`, {
+      id: _id
+    })
+  }
   return (
     <Container>
       {initialStatus === "pending"
@@ -142,7 +149,7 @@ const ConfirmDetail = (props: any) => {
                   <Button variant="contained" color="primary" onClick={handleApprove}>
                     Approve
                   </Button>
-                  <Button variant="contained" color="error">
+                  <Button variant="contained" color="error" onClick={handleReject}>
                     Reject
                   </Button>
                 </div>
