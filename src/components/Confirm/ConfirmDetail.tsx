@@ -19,18 +19,18 @@ const ConfirmDetail = (props: any) => {
     citizen_images,
     createdAt,
     updatedAt,
-  } = props.metadata
+  } = props.metadata;
 
   const [phone, setPhone] = useState(initialPhone);
   const [firstName, setFirstName] = useState(initialFirstName);
   const [lastName, setLastName] = useState(initialLastName);
   const [dob, setDob] = useState(initialDob);
   const [citizen_id, setCitizenId] = useState(initialCitizenId);
-  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl)
+  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
 
   const handleApprove = async () => {
     // console.log('ccc')
-    "use client"
+    "use client";
     const res = await fetch(
       `http://localhost:3056/api/v1/user/update/${user}`,
       {
@@ -43,13 +43,13 @@ const ConfirmDetail = (props: any) => {
           firstName: firstName,
           lastName: lastName,
           attributes: {
-            citizen_id: citizen_id
+            citizen_id: citizen_id,
           },
-          avatarUrl: avatarUrl
+          avatarUrl: avatarUrl,
         }),
         cache: "no-cache",
       }
-    ).then(res => console.log(res))
+    ).then((res) => console.log(res));
 
     const response = await fetch(
       "http://localhost:3056/api/v1/confirm/approved",
@@ -72,40 +72,61 @@ const ConfirmDetail = (props: any) => {
   }
   return (
     <Container>
-      {initialStatus === "pending"
-        ? <Grid container spacing={3}>
+      {initialStatus === "pending" ? (
+        <Grid container spacing={3}>
           <Grid item xs={12} md={8}>
             <Card>
               <CardHeader title="User Details" />
               <CardContent>
                 <List>
                   <ListItem>
-                    <span style={{ width: '150px' }}> <strong>User ID:</strong></span>
+                    <span style={{ width: "150px" }}>
+                      {" "}
+                      <strong>User ID:</strong>
+                    </span>
                     {user}
                   </ListItem>
                   <ListItem>
-                    <Box width={"100%"} display="flex" flexDirection="column" alignItems="flex-start">
-                      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                        <span style={{ width: '150px' }}> <strong>Avatar:</strong></span>
-                        {avatarUrl && <Avatar src={avatarUrl} alt="Avatar" />}</div>
-                      {/* <TextField
-                        multiline
-                        fullWidth
-                        value={avatarUrl}
-                        onChange={(e) => setAvatarUrl(e.target.value)}
-                      /> */}
+                    <Box
+                      width={"100%"}
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="flex-start"
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span style={{ width: "150px" }}>
+                          {" "}
+                          <strong>Avatar:</strong>
+                        </span>
+                        {avatarUrl && <Avatar src={avatarUrl} alt="Avatar" />}
+                      </div>
                     </Box>
                   </ListItem>
                   <ListItem>
-                    <span style={{ width: '150px' }}> <strong>Status:</strong></span>
+                    <span style={{ width: "150px" }}>
+                      {" "}
+                      <strong>Status:</strong>
+                    </span>
                     {initialStatus}
                   </ListItem>
                   <ListItem>
-                    <span style={{ width: '150px' }}> <strong>Phone:</strong></span>
+                    <span style={{ width: "150px" }}>
+                      {" "}
+                      <strong>Phone:</strong>
+                    </span>
                     {phone}
                   </ListItem>
                   <ListItem>
-                    <span style={{ width: '150px' }}> <strong>First Name:</strong></span>
+                    <span style={{ width: "150px" }}>
+                      {" "}
+                      <strong>First Name:</strong>
+                    </span>
                     <TextField
                       value={firstName}
                       id="firstName"
@@ -115,7 +136,10 @@ const ConfirmDetail = (props: any) => {
                     />
                   </ListItem>
                   <ListItem>
-                    <span style={{ width: '150px' }}> <strong>Last Name:</strong></span>
+                    <span style={{ width: "150px" }}>
+                      {" "}
+                      <strong>Last Name:</strong>
+                    </span>
                     <TextField
                       value={lastName}
                       id="lastName"
@@ -124,8 +148,11 @@ const ConfirmDetail = (props: any) => {
                       onChange={(e) => setLastName(e.target.value)}
                     />
                   </ListItem>
-                  <ListItem>
-                    <span style={{ width: '150px' }}> <strong>Date Of Birth:</strong></span>
+                  {/* <ListItem>
+                    <span style={{ width: "150px" }}>
+                      {" "}
+                      <strong>Date Of Birth:</strong>
+                    </span>
                     <TextField
                       value={dob}
                       id="dob"
@@ -135,7 +162,10 @@ const ConfirmDetail = (props: any) => {
                     />
                   </ListItem>
                   <ListItem>
-                    <span style={{ width: '150px' }}> <strong>CitizenId:</strong></span>
+                    <span style={{ width: "150px" }}>
+                      {" "}
+                      <strong>CitizenId:</strong>
+                    </span>
                     <TextField
                       value={citizen_id}
                       id="citizenId"
@@ -143,10 +173,20 @@ const ConfirmDetail = (props: any) => {
                       type="text"
                       onChange={(e) => setCitizenId(e.target.value)}
                     />
-                  </ListItem>
+                  </ListItem> */}
                 </List>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-                  <Button variant="contained" color="primary" onClick={handleApprove}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: "1rem",
+                  }}
+                >
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleApprove}
+                  >
                     Approve
                   </Button>
                   <Button variant="contained" color="error" onClick={handleReject}>
@@ -166,7 +206,7 @@ const ConfirmDetail = (props: any) => {
                       <img
                         src={imageUrl}
                         alt={`Citizen ID Image ${index + 1}`}
-                        style={{ width: '100%', height: 'auto' }}
+                        style={{ width: "100%", height: "auto" }}
                       />
                     </ListItem>
                   ))}
@@ -174,49 +214,85 @@ const ConfirmDetail = (props: any) => {
               </CardContent>
             </Card>
           </Grid>
-
         </Grid>
-        : <Grid container spacing={3}>
+      ) : (
+        <Grid container spacing={3}>
           <Grid item xs={12} md={8}>
             <Card>
               <CardHeader title="User Details" />
               <CardContent>
                 <List>
                   <ListItem>
-                    <span style={{ width: '150px' }}> <strong>User ID:</strong></span>
+                    <span style={{ width: "150px" }}>
+                      {" "}
+                      <strong>User ID:</strong>
+                    </span>
                     {user}
                   </ListItem>
                   <ListItem>
-                    <Box width={"100%"} display="flex" flexDirection="column" alignItems="flex-start">
-                      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                        <span style={{ width: '150px' }}> <strong>Avatar:</strong></span>
-                        {avatarUrl && <Avatar src={avatarUrl} alt="Avatar" />}</div>
+                    <Box
+                      width={"100%"}
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="flex-start"
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span style={{ width: "150px" }}>
+                          {" "}
+                          <strong>Avatar:</strong>
+                        </span>
+                        {avatarUrl && <Avatar src={avatarUrl} alt="Avatar" />}
+                      </div>
                     </Box>
                   </ListItem>
                   <ListItem>
-                    <span style={{ width: '150px' }}> <strong>Status:</strong></span>
+                    <span style={{ width: "150px" }}>
+                      {" "}
+                      <strong>Status:</strong>
+                    </span>
                     {initialStatus}
                   </ListItem>
                   <ListItem>
-                    <span style={{ width: '150px' }}> <strong>Phone:</strong></span>
+                    <span style={{ width: "150px" }}>
+                      {" "}
+                      <strong>Phone:</strong>
+                    </span>
                     {phone}
                   </ListItem>
                   <ListItem>
-                    <span style={{ width: '150px' }}> <strong>First Name:</strong></span>
+                    <span style={{ width: "150px" }}>
+                      {" "}
+                      <strong>First Name:</strong>
+                    </span>
                     {firstName}
                   </ListItem>
                   <ListItem>
-                    <span style={{ width: '150px' }}> <strong>Last Name:</strong></span>
+                    <span style={{ width: "150px" }}>
+                      {" "}
+                      <strong>Last Name:</strong>
+                    </span>
                     {lastName}
                   </ListItem>
-                  <ListItem>
-                    <span style={{ width: '150px' }}> <strong>Date Of Birth:</strong></span>
+                  {/* <ListItem>
+                    <span style={{ width: "150px" }}>
+                      {" "}
+                      <strong>Date Of Birth:</strong>
+                    </span>
                     {dob}
                   </ListItem>
                   <ListItem>
-                    <span style={{ width: '150px' }}> <strong>CitizenId:</strong></span>
+                    <span style={{ width: "150px" }}>
+                      {" "}
+                      <strong>CitizenId:</strong>
+                    </span>
                     {citizen_id}
-                  </ListItem>
+                  </ListItem> */}
                 </List>
               </CardContent>
             </Card>
@@ -231,7 +307,7 @@ const ConfirmDetail = (props: any) => {
                       <img
                         src={imageUrl}
                         alt={`Citizen ID Image ${index + 1}`}
-                        style={{ width: '100%', height: 'auto' }}
+                        style={{ width: "100%", height: "auto" }}
                       />
                     </ListItem>
                   ))}
@@ -239,9 +315,8 @@ const ConfirmDetail = (props: any) => {
               </CardContent>
             </Card>
           </Grid>
-
         </Grid>
-      }
+      )}
     </Container>
   );
 };
