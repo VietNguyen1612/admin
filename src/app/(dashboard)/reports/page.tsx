@@ -1,5 +1,5 @@
 "use client";
-import { Button, Tooltip } from "@mui/material";
+import { Box, Button, Chip, Tooltip } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import Image from "next/image";
@@ -122,7 +122,14 @@ const ReportPage = () => {
               textOverflow: "ellipsis",
             }}
           >
-            {params.value}
+            <Chip
+              label={params.value}
+              style={{
+                backgroundColor: params.value === 'pending' ? 'blue' :
+                  params.value === 'approve' ? 'green' : 'red',
+                color: 'white',
+              }}
+            />
           </div>
         </Tooltip>
       ),
@@ -166,19 +173,21 @@ const ReportPage = () => {
   ];
 
   return (
-    <div>
-      <DataGrid
-        rowHeight={120}
-        rows={reports} // assuming 'ads' is your data
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 10 },
-          },
-        }}
-        rowSelection={false}
-        getRowId={(row: any) => row._id}
-      />
+    <div className='d-flex align-items-center justify-content-center'>
+      <Box>
+        <DataGrid
+          rowHeight={120}
+          rows={reports} // assuming 'ads' is your data
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 10 },
+            },
+          }}
+          rowSelection={false}
+          getRowId={(row: any) => row._id}
+        />
+      </Box>
     </div>
   );
 };

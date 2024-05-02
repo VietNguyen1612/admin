@@ -1,6 +1,6 @@
 "use client"
 import { returnFormattedDate } from "@/hooks/regex";
-import { Box, Button, Container, Tooltip } from "@mui/material";
+import { Box, Button, Chip, Container, Tooltip } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import Image from "next/image";
@@ -54,7 +54,15 @@ const ConfirmPage = () => {
       renderCell: (params: any) => (
         <Tooltip title={params.value ? params.value : ''} enterDelay={500} enterNextDelay={500}>
           <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {params.value}
+            <Chip
+              label={params.value}
+              style={{
+                backgroundColor: params.value === 'pending' ? 'blue' :
+                  params.value === 'approved' ? 'green' : 'red',
+                color: 'white',
+              }}
+            />
+
           </div>
         </Tooltip>
       )

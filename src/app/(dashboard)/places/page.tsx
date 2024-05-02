@@ -1,6 +1,6 @@
 "use client";
 
-import { Tooltip, Button } from "@mui/material";
+import { Tooltip, Button, Box } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import axios from "axios";
 import Image from "next/image";
@@ -66,7 +66,28 @@ const PlacesPage = () => {
         </Tooltip>
       ),
     },
-    { field: "phone", headerName: "Phone", width: 130 },
+    {
+      field: "phone",
+      headerName: "Phone",
+      width: 150,
+      renderCell: (params: any) => (
+        <Tooltip
+          title={params.value ? params.value.toString() : ""}
+          enterDelay={500}
+          enterNextDelay={500}
+        >
+          <div
+            style={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {params.value ? params.value : 'No number'}
+          </div>
+        </Tooltip>
+      ),
+    },
     // {
     //   field: 'website', headerName: 'Website', width: 130,
     //   renderCell: (params: any) => (
@@ -116,20 +137,23 @@ const PlacesPage = () => {
       >
         Add place
       </Button>
-
-      <DataGrid
-        rowHeight={160}
-        rows={places}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 10 },
-          },
-        }}
-        // pageSizeOptions={[10, 15]}
-        rowSelection={false}
-        getRowId={(row: any) => row._id}
-      />
+      <div className='d-flex align-items-center justify-content-center'>
+        <Box>
+          <DataGrid
+            rowHeight={160}
+            rows={places}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: { page: 0, pageSize: 10 },
+              },
+            }}
+            // pageSizeOptions={[10, 15]}
+            rowSelection={false}
+            getRowId={(row: any) => row._id}
+          />
+        </Box>
+      </div>
     </>
   );
 };
