@@ -35,14 +35,14 @@ const SidebarNavTitle = (props: PropsWithChildren) => {
 export default function SidebarNav() {
   return (
     <ul className="list-unstyled">
-      <SidebarNavItem icon={faGauge} href="/">
+      {/* <SidebarNavItem icon={faGauge} href="/">
         Dashboard
         <small className="ms-auto">
           <Badge bg="info" className="ms-auto">
             NEW
           </Badge>
         </small>
-      </SidebarNavItem>
+      </SidebarNavItem> */}
       {/* <SidebarNavItem icon={faCode} href="/pokemons">
         Sample
         <small className="ms-auto">
@@ -71,10 +71,10 @@ export default function SidebarNav() {
       </SidebarNavItem>
       <SidebarNavTitle>Advertisements</SidebarNavTitle>
       <SidebarNavItem icon={faDroplet} href="/ads">
-        All ads
+        Valid ads
       </SidebarNavItem>
       <SidebarNavItem icon={faDroplet} href="/ads/invalid">
-        Invalid ads
+        Pending ads
       </SidebarNavItem>
       {/* <SidebarNavGroup toggleIcon={faStar} toggleText="Pages">
         <SidebarNavItem icon={faRightToBracket} href="login">
@@ -90,7 +90,6 @@ export default function SidebarNav() {
           Error 500
         </SidebarNavItem>
       </SidebarNavGroup> */}
-
     </ul>
   );
 }

@@ -16,7 +16,7 @@ const PlacesPage = () => {
       const userListURL = `http://localhost:3056/api/v1/place/admin/page`;
       const data = await axios.get(userListURL);
 
-      setPlaces(data.data.metadata);
+      setPlaces(data.data.metadata.reverse());
     };
     fetchData();
   }, []);
